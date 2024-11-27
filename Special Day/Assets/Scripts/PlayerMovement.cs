@@ -2,45 +2,61 @@ using UnityEngine;
 
 public class PlayerControls : MonoBehaviour
 {
-    public float moveSpeed = 10f;  // Speed of player movement
-    public float cameraRotationSpeed = 50f;  // Speed of camera rotation
+    [Header("References")]
+    public Rigidbody rb; // Rigidbody for the player
+    public Transform head; // Player head/camera
+    public Camera camera;
 
-    private Transform cameraTransform;
+    [Header("Movement Settings")]
+    public float moveSpeed = 5f; // Speed of movement
+    public float rotationSpeed = 100f; // Speed of rotation
 
-    void Start()
+    private Vector3 movementInput; // Stores forward movement input
+
+    private void Update()
     {
-        // Reference the main camera in the scene
-        cameraTransform = Camera.main.transform;
+        HandleRotation(); // Handles A/D rotation
+        HandleMovementInput(); // Collects W forward input
     }
 
-    void Update()
+    private void FixedUpdate() // For physics updates
     {
-        HandleMovement();
-        HandleCameraRotation();
+        ApplyMovement(); // Applies velocity to Rigidbody
     }
 
-    void HandleMovement()
+    private void HandleMovementInput()
     {
-        // Move the player forward in the direction they are facing when 'W' is pressed
+        movementInput = Vector3.zero;
+
+        // Move forward in the direction the player is facing (W key)
         if (Input.GetKey(KeyCode.W))
         {
-            // Use transform.forward to move in the direction the player is facing
-            transform.position += transform.forward * moveSpeed * Time.deltaTime;
+            movementInput = transform.forward * moveSpeed;
         }
     }
 
-    void HandleCameraRotation()
+    private void ApplyMovement()
     {
-        // Rotate the camera left when 'A' is pressed
+        // Apply velocity based on forward input
+        rb.linearVelocity = new Vector3(movementInput.x, rb.linearVelocity.y, movementInput.z); // Preserve vertical velocity
+    }
+
+    private void HandleRotation()
+    {
+        // Rotate left/right (A/D keys)
+        float horizontalInput = 0f;
+
         if (Input.GetKey(KeyCode.A))
         {
-            transform.Rotate(Vector3.up, -cameraRotationSpeed * Time.deltaTime);
+            horizontalInput = -1f; // Rotate left
+        }
+        else if (Input.GetKey(KeyCode.D))
+        {
+            horizontalInput = 1f; // Rotate right
         }
 
-        // Rotate the camera right when 'D' is pressed
-        if (Input.GetKey(KeyCode.D))
-        {
-            transform.Rotate(Vector3.up, cameraRotationSpeed * Time.deltaTime);
-        }
+        // Apply rotation to the player object
+        float rotationAmount = horizontalInput * rotationSpeed * Time.deltaTime;
+        transform.Rotate(0, rotationAmount, 0);
     }
 }
