@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class PlayerControls : MonoBehaviour
+public class PlayerMovement : MonoBehaviour
 {
     [Header("References")]
     public Rigidbody rb; // Rigidbody for the player
@@ -8,7 +8,7 @@ public class PlayerControls : MonoBehaviour
     public Camera camera;
 
     [Header("Movement Settings")]
-    public float moveSpeed = 5f; // Speed of movement
+    public float moveSpeed = 3f; // Speed of movement
     public float rotationSpeed = 100f; // Speed of rotation
 
     private Vector3 movementInput; // Stores forward movement input
